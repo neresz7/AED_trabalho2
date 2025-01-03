@@ -6,8 +6,8 @@
 // GraphBellmanFord - Bellman-Ford Algorithm
 //
 
-// Student Name :
-// Student Number :
+// Student Name : João Silva
+// Student Number : 120172
 // Student Name : Felipe Silva
 // Student Number : 117127
 

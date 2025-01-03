@@ -14,23 +14,19 @@
 /*** COMPLETE THE GraphComputeTransitiveClosure FUNCTION ***/
 
 #include "GraphTransitiveClosure.h"
+#include "GraphBellmanFordAlg.h"
 
 #include <assert.h>
-#include <stdio.h>
 #include <stdlib.h>
-
-#include "Graph.h"
-#include "GraphBellmanFordAlg.h"
+#include <stdio.h>
 #include "instrumentation.h"
 
-// Compute the transitive closure of a directed graph
-// Return the computed transitive closure as a directed graph
-// Use the Bellman-Ford algorithm
 Graph* GraphComputeTransitiveClosure(Graph* g) {
     assert(g != NULL);
     assert(GraphIsDigraph(g));
     assert(GraphIsWeighted(g) == 0);
 
+    // Inicializando a instrumentação
     InstrName[0] = "memops";  // Contagem de operações de memória
     InstrName[1] = "adds";    // Contagem de operações de adição
     InstrCalibrate();
@@ -38,6 +34,7 @@ Graph* GraphComputeTransitiveClosure(Graph* g) {
 
     unsigned int numVertices = GraphGetNumVertices(g);
     Graph* transitiveClosure = GraphCreate(numVertices, 1, 0);
+    InstrCount[0] += 1;  // Incrementando operações de memória para GraphCreate
 
     for (unsigned int u = 0; u < numVertices; u++) {
         GraphBellmanFordAlg* bellmanFordResult = GraphBellmanFordAlgExecute(g, u);
@@ -47,13 +44,14 @@ Graph* GraphComputeTransitiveClosure(Graph* g) {
         }
 
         for (unsigned int v = 0; v < numVertices; v++) {
-            if (GraphBellmanFordAlgReached(bellmanFordResult, v)) {
+            if (u != v && GraphBellmanFordAlgReached(bellmanFordResult, v)) {
                 GraphAddEdge(transitiveClosure, u, v);
-                InstrCount[0] += 1;  // Memórias acessos
+                InstrCount[0] += 1;  // Incrementando operações de memória para GraphAddEdge
             }
         }
 
         GraphBellmanFordAlgDestroy(&bellmanFordResult);
+        InstrCount[0] += 1;  // Incrementando operações de memória para GraphBellmanFordAlgDestroy
     }
 
     InstrPrint();
